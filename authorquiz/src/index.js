@@ -4,6 +4,7 @@ import './index.css';
 import AuthorQuiz from './AuthorQuiz';
 import * as serviceWorker from './serviceWorker';
 import {shuffle, sample} from 'underscore';
+import { render } from '@testing-library/react';
 
 const authors = [
   {
@@ -62,17 +63,23 @@ function getTurnData(authors) {
 }
 
 const state =  {
-  turnData: getTurnData(authors)
+  turnData: getTurnData(authors),
+  highlight: ''
 };
 
-ReactDOM.render(
-  <React.StrictMode>
-    <AuthorQuiz {...state} />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+function onAnswerSelected(answer) {
+  const isCorrect = state.turnData.author.books.some((book) => book === answer);
+  state.highlight = isCorrect ? 'correct'  : 'wrong';
+  console.log(state.highlight);
+  renderScreen();
+}
+
+function renderScreen() {
+  ReactDOM.render(<AuthorQuiz {...state} onAnswerSelected={onAnswerSelected} />, document.getElementById('root'))
+}
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
+renderScreen();
 serviceWorker.unregister();
